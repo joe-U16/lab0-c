@@ -82,6 +82,7 @@ static void pop_file();
 
 static bool interpret_cmda(int argc, char *argv[]);
 
+
 /* Initialize interpreter */
 void init_cmd()
 {

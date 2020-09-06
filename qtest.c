@@ -74,6 +74,7 @@ static bool do_reverse(int argc, char *argv[]);
 static bool do_size(int argc, char *argv[]);
 static bool do_sort(int argc, char *argv[]);
 static bool do_show(int argc, char *argv[]);
+bool do_hello(int argc, char *argv[]);
 
 static void queue_init();
 
@@ -104,6 +105,7 @@ static void console_init()
               NULL);
     add_param("fail", &fail_limit,
               "Number of times allow queue operations to return false", NULL);
+    add_cmd("hello", do_hello, "                | Print hello message");
 }
 
 static bool do_new(int argc, char *argv[])
@@ -670,6 +672,11 @@ static bool queue_quit(int argc, char *argv[])
     }
 
     return true;
+}
+
+bool do_hello(int argc, char *argv[])
+{
+    return (bool) printf("Hello, World\n");
 }
 
 static void usage(char *cmd)
