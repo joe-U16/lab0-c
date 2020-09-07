@@ -14,7 +14,7 @@ queue_t *q_new()
     queue_t *q = malloc(sizeof(queue_t));
     /* TODO: What if malloc returned NULL? */
     if (!q)
-        return q;
+        return NULL;
     q->head = NULL;
     q->tail = NULL;
     q->size = 0;
@@ -161,6 +161,8 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
+    if (!q)
+        return 0;
     return q->size;
 }
 
@@ -171,31 +173,34 @@ int q_size(queue_t *q)
  * (e.g., by calling q_insert_head, q_insert_tail, or q_remove_head).
  * It should rearrange the existing ones.
  */
+
 void q_reverse(queue_t *q)
 {
-    if (!q || !q->size)
+    if (!q || q->size < 2)
         return;
-    list_ele_t *tmp = q->tail;
-    list_ele_t *walk = q->head;
-    q->tail = q->head;
-    while (q->head != tmp) {
-        q->head = q->head->next;
-        q->head->next = walk;
-        walk = q->head;
+
+    list_ele_t *tmp = q->head->next->next;
+    q->tail->next = q->head->next;
+    q->head->next = q->head;
+    while (q->tail->next != q->tail) {
+        q->tail->next->next = q->head->next;
+        q->head->next = q->tail->next;
+        q->tail->next = tmp;
+        tmp = tmp->next;
     }
-    q->head->next = walk;
-    free(walk);
-    free(tmp);
-    return;
+    q->tail->next->next = q->head->next;
+    tmp = q->head;
+    q->head = q->tail;
+    q->tail = tmp;
+    q->tail->next = NULL;
+    tmp = NULL;
+    list_ele_t *t = q->head;
+    if (t == NULL)
+        puts("null head");
+
+    // printf("\n%s\n", q->head->value);
+    // printf("\n%s\n", q->head->next->value);
+    // printf("\n%s\n", q->tail->value);
 }
 
-/*
- * Sort elements of queue in ascending order
- * No effect if q is NULL or empty. In addition, if q has only one
- * element, do nothing.
- */
-void q_sort(queue_t *q)
-{
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
-}
+void q_sort(queue_t *q) {}
