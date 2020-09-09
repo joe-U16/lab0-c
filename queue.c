@@ -5,6 +5,7 @@
 #include "harness.h"
 #include "queue.h"
 
+
 /*
  * Create empty queue.
  * Return NULL if could not allocate space.
@@ -203,4 +204,52 @@ void q_reverse(queue_t *q)
     // printf("\n%s\n", q->tail->value);
 }
 
-void q_sort(queue_t *q) {}
+list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+{
+    if (!l2)
+        return l1;
+    if (!l1)
+        return l2;
+
+    if (strcasecmp(l1->value, l2->value) < 0) {
+        l1->next = merge(l1->next, l2);
+        return l1;
+    } else {
+        l2->next = merge(l1, l2->next);
+        return l2;
+    }
+}
+
+list_ele_t *mergeSortList(list_ele_t *q)
+{
+    if (!q || !q->next)
+        return q;
+
+    list_ele_t *fast = q->next;
+    list_ele_t *slow = q;
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    fast = slow->next;
+    slow->next = NULL;
+
+    list_ele_t *l1 = mergeSortList(q);
+    list_ele_t *l2 = mergeSortList(fast);
+
+    return merge(l1, l2);
+}
+
+void q_sort(queue_t *q)
+{
+    if (!q || !q->head || !q->head->next || !q->size) {
+        return;
+    }
+    q->head = mergeSortList(q->head);
+    while (q->tail->next != NULL) {
+        q->tail = q->tail->next;
+    }
+    q->tail->next = NULL;
+    return;
+}
