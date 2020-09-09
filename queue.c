@@ -137,9 +137,6 @@ void q_reverse(queue_t *q)
     q->tail = tmp;
     q->tail->next = NULL;
     tmp = NULL;
-    list_ele_t *t = q->head;
-    if (t == NULL)
-        puts("null head");
 }
 
 void mergeSort(list_ele_t **head)
