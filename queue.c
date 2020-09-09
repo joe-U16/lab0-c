@@ -280,15 +280,15 @@ void mergeSort(list_ele_t **head)
 
 void q_sort(queue_t *q)
 {
-    if (!q->head || !q->head->next) {
+    if (!q || !q->head) {
         return;
     }
 
     mergeSort(&q->head);
 
-    while (q->tail->next != NULL) {
+    while (q->tail->next) {
         q->tail = q->tail->next;
     }
-    q->tail->next = NULL;
+
     return;
 }
