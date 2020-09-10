@@ -90,18 +90,21 @@ bool q_insert_tail(queue_t *q, char *s)
 
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    if (!q || !q->head) {
+    if (!q || !q->head)
         return false;
-    }
+
     if (sp) {
-        size_t realbufsize = (bufsize > strlen(q->head->value))
-                                 ? strlen(q->head->value)
-                                 : bufsize - 1;
-        memset(sp, '\0', realbufsize + 1);
-        strncpy(sp, q->head->value, realbufsize);
+        size_t buf;
+        if (bufsize > strlen(q->head->value)) {
+            buf = strlen(q->head->value);
+        } else {
+            buf = bufsize - 1;
+        }
+        memset(sp, '\0', buf + 1);
+        strncpy(sp, q->head->value, buf);
     }
-    list_ele_t *tmp;
-    tmp = q->head;
+
+    list_ele_t *tmp = q->head;
     q->head = q->head->next;
     tmp->next = NULL;
     free(tmp->value);
