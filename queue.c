@@ -122,24 +122,25 @@ int q_size(queue_t *q)
 
 void q_reverse(queue_t *q)
 {
-    if (!q || q->size < 2)
+    if (!q || !q->head)
         return;
 
-    list_ele_t *tmp = q->head->next->next;
-    q->tail->next = q->head->next;
-    q->head->next = q->head;
-    while (q->tail->next != q->tail) {
-        q->tail->next->next = q->head->next;
-        q->head->next = q->tail->next;
-        q->tail->next = tmp;
-        tmp = tmp->next;
+    q->tail = q->head;
+
+    list_ele_t **node = &q->head;
+    list_ele_t *left = NULL;
+    list_ele_t *right = (*node)->next;
+    while (right) {
+        (*node)->next = left;
+        left = (*node);
+        (*node) = right;
+        right = right->next;
     }
-    q->tail->next->next = q->head->next;
-    tmp = q->head;
-    q->head = q->tail;
-    q->tail = tmp;
-    q->tail->next = NULL;
-    tmp = NULL;
+    (*node)->next = left;
+    q->head = (*node);
+    left = NULL;
+    right = NULL;
+    return;
 }
 
 void mergeSort(list_ele_t **head)
