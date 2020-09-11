@@ -141,42 +141,45 @@ void q_reverse(queue_t *q)
     return;
 }
 
+void splitlist(list_ele_t *head, list_ele_t **left, list_ele_t **right)
+{
+    *left = head;
+    *right = head->next;
 
-void mergeSort(list_ele_t **head)
+    while (*right && (*right)->next) {
+        *left = (*left)->next;
+        *right = (*right)->next->next;
+    }
+    *right = (*left)->next;
+    (*left)->next = NULL;
+    (*left) = head;
+}
+
+void MergeList(list_ele_t **head)
 {
     if (!*head || !(*head)->next)
         return;
+    list_ele_t *l1;
+    list_ele_t *l2;
 
-
-    list_ele_t *fast = (*head)->next;
-    list_ele_t *slow = *head;
-
-    // walk the linked list and slice it to two linked list
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-    fast = slow->next;
-    slow->next = NULL;
-    slow = *head;
-
-    mergeSort(&slow);
-    mergeSort(&fast);
+    splitlist(*head, &l1, &l2);
+    MergeList(&l1);
+    MergeList(&l2);
 
     *head = NULL;
     list_ele_t **tmp = head;
 
-    while (fast && slow) {
-        if (strcasecmp(slow->value, fast->value) < 0) {
-            *tmp = slow;
-            slow = slow->next;
+    while (l1 && l2) {
+        if (strcasecmp(l1->value, l2->value) < 0) {
+            *tmp = l1;
+            l1 = l1->next;
         } else {
-            *tmp = fast;
-            fast = fast->next;
+            *tmp = l2;
+            l2 = l2->next;
         }
         tmp = &(*tmp)->next;
     }
-    *tmp = fast ? fast : slow;
+    *tmp = l2 ? l2 : l1;
 }
 
 void q_sort(queue_t *q)
@@ -184,12 +187,63 @@ void q_sort(queue_t *q)
     if (!q || !q->head) {
         return;
     }
-
-    mergeSort(&q->head);
-
+    MergeList(&q->head);
+    q->tail = q->head;
     while (q->tail->next) {
         q->tail = q->tail->next;
     }
-
     return;
 }
+
+
+// void mergeSort(list_ele_t **head)
+// {
+//     if (!*head || !(*head)->next)
+//         return;
+
+
+//     list_ele_t *l2 = (*head)->next;
+//     list_ele_t *l1 = *head;
+
+//     // walk the linked list and slice it to two linked list
+//     while (l2 && l2->next) {
+//         l1 = l1->next;
+//         l2 = l2->next->next;
+//     }
+//     l2 = l1->next;
+//     l1->next = NULL;
+//     l1 = *head;
+
+//     mergeSort(&l1);
+//     mergeSort(&l2);
+
+//     *head = NULL;
+//     list_ele_t **tmp = head;
+
+//     while (l2 && l1) {
+//         if (strcasecmp(l1->value, l2->value) < 0) {
+//             *tmp = l1;
+//             l1 = l1->next;
+//         } else {
+//             *tmp = l2;
+//             l2 = l2->next;
+//         }
+//         tmp = &(*tmp)->next;
+//     }
+//     *tmp = l2 ? l2 : l1;
+// }
+
+// void q_sort(queue_t *q)
+// {
+//     if (!q || !q->head) {
+//         return;
+//     }
+
+//     mergeSort(&q->head);
+
+//     while (q->tail->next) {
+//         q->tail = q->tail->next;
+//     }
+
+//     return;
+// }
