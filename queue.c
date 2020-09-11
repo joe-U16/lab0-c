@@ -142,46 +142,41 @@ void q_reverse(queue_t *q)
 }
 
 
-list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+void mergeSort(list_ele_t **head)
 {
-    // merge with recursive
-    if (!l2)
-        return l1;
-    if (!l1)
-        return l2;
+    if (!*head || !(*head)->next)
+        return;
 
-    if (strcasecmp(l1->value, l2->value) < 0) {
-        l1->next = merge(l1->next, l2);
-        return l1;
-    } else {
-        l2->next = merge(l1, l2->next);
-        return l2;
-    }
-}
 
-list_ele_t *mergeSortList(list_ele_t *head)
-{
-    // merge sort
-    if (!head || !head->next)
-        return head;
+    list_ele_t *fast = (*head)->next;
+    list_ele_t *slow = *head;
 
-    list_ele_t *fast = head->next;
-    list_ele_t *slow = head;
-
-    // split list
+    // walk the linked list and slice it to two linked list
     while (fast && fast->next) {
         slow = slow->next;
         fast = fast->next->next;
     }
     fast = slow->next;
     slow->next = NULL;
+    slow = *head;
 
-    // sort each list
-    list_ele_t *l1 = mergeSortList(head);
-    list_ele_t *l2 = mergeSortList(fast);
+    mergeSort(&slow);
+    mergeSort(&fast);
 
-    // merge sorted l1 and sorted l2
-    return merge(l1, l2);
+    *head = NULL;
+    list_ele_t **tmp = head;
+
+    while (fast && slow) {
+        if (strcasecmp(slow->value, fast->value) < 0) {
+            *tmp = slow;
+            slow = slow->next;
+        } else {
+            *tmp = fast;
+            fast = fast->next;
+        }
+        tmp = &(*tmp)->next;
+    }
+    *tmp = fast ? fast : slow;
 }
 
 void q_sort(queue_t *q)
@@ -189,11 +184,12 @@ void q_sort(queue_t *q)
     if (!q || !q->head) {
         return;
     }
-    q->head = mergeSortList(q->head);
-    q->tail = q->head;
+
+    mergeSort(&q->head);
+
     while (q->tail->next) {
         q->tail = q->tail->next;
     }
-    q->tail->next = NULL;
+
     return;
 }
