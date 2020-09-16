@@ -41,21 +41,18 @@ bool q_insert_head(queue_t *q, char *s)
     if (!newh)
         return false;
 
-    newh->value = malloc(sizeof(char) * (strlen(s) + 1));
-    if (!newh->value) {
+    char *tmp;
+    tmp = malloc(sizeof(char) * (strlen(s) + 1));
+    if (!tmp) {
         free(newh);
         return false;
     }
-
-    memset(newh->value, '\0', strlen(s) + 1);
-    strncpy(newh->value, s, strlen(s));
-
-    if (!q->head) {
-        q->head = q->tail = newh;
-        q->tail->next = NULL;
-    } else {
-        newh->next = q->head;
-        q->head = newh;
+    newh->value = tmp;
+    strncpy(newh->value, s, strlen(s) + 1);
+    newh->next = q->head;
+    q->head = newh;
+    if (!q->size) {
+        q->tail = q->head;
     }
     q->size += 1;
     return true;
@@ -70,18 +67,20 @@ bool q_insert_tail(queue_t *q, char *s)
     if (!newt)
         return false;
 
-    newt->value = malloc(sizeof(char) * (strlen(s) + 1));
-    if (!newt->value) {
+    char *tmp;
+    tmp = malloc(sizeof(char) * (strlen(s) + 1));
+    if (!tmp) {
         free(newt);
         return false;
     }
-    memset(newt->value, '\0', strlen(s) + 1);
-    strncpy(newt->value, s, strlen(s));
+    newt->value = tmp;
+    strncpy(newt->value, s, strlen(s) + 1);
     newt->next = NULL;
-    if (!q->tail) {
-        q->head = q->tail = newt;
-    } else {
+    if (q->size) {
         q->tail->next = newt;
+        q->tail = newt;
+    } else {
+        q->head = newt;
         q->tail = newt;
     }
     q->size += 1;
@@ -194,56 +193,3 @@ void q_sort(queue_t *q)
     }
     return;
 }
-
-
-// void mergeSort(list_ele_t **head)
-// {
-//     if (!*head || !(*head)->next)
-//         return;
-
-
-//     list_ele_t *l2 = (*head)->next;
-//     list_ele_t *l1 = *head;
-
-//     // walk the linked list and slice it to two linked list
-//     while (l2 && l2->next) {
-//         l1 = l1->next;
-//         l2 = l2->next->next;
-//     }
-//     l2 = l1->next;
-//     l1->next = NULL;
-//     l1 = *head;
-
-//     mergeSort(&l1);
-//     mergeSort(&l2);
-
-//     *head = NULL;
-//     list_ele_t **tmp = head;
-
-//     while (l2 && l1) {
-//         if (strcasecmp(l1->value, l2->value) < 0) {
-//             *tmp = l1;
-//             l1 = l1->next;
-//         } else {
-//             *tmp = l2;
-//             l2 = l2->next;
-//         }
-//         tmp = &(*tmp)->next;
-//     }
-//     *tmp = l2 ? l2 : l1;
-// }
-
-// void q_sort(queue_t *q)
-// {
-//     if (!q || !q->head) {
-//         return;
-//     }
-
-//     mergeSort(&q->head);
-
-//     while (q->tail->next) {
-//         q->tail = q->tail->next;
-//     }
-
-//     return;
-// }
