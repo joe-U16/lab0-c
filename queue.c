@@ -87,6 +87,14 @@ bool q_insert_tail(queue_t *q, char *s)
     return true;
 }
 
+/*
+ * Attempt to remove element from head of queue.
+ * Return true if successful.
+ * Return false if queue is NULL or empty.
+ * If sp is non-NULL and an element is removed, copy the removed string to *sp
+ * (up to a maximum of bufsize-1 characters, plus a null terminator.)
+ * The space used by the list element and the string should be freed.
+ */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
     if (!q || !q->head)
@@ -99,15 +107,18 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
         } else {
             buf = bufsize - 1;
         }
-        memset(sp, '\0', buf + 1);
-        strncpy(sp, q->head->value, buf);
-    }
 
-    list_ele_t *tmp = q->head;
+        strncpy(sp, q->head->value, buf);
+        *(sp + buf) = '\0';
+    }
+    /* TODO: You need to fix up this code. */
+    /* TODO: Remove the above comment when you are about to implement. */
+    list_ele_t *node;
+    node = q->head;
     q->head = q->head->next;
-    tmp->next = NULL;
-    free(tmp->value);
-    free(tmp);
+    node->next = NULL;
+    free(node->value);
+    free(node);
     q->size -= 1;
     return true;
 }
